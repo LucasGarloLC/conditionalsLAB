@@ -1,11 +1,6 @@
-# typescript-sandbox
+Entrega del quinto laboratorio.
 
-Para la parte de cada módulo en la que te planteamos ejercicios con JavaScript puedes usar este sandbox.
 
-Pasos:
+He hecho los apartados obligatorios.
 
-- Clonate el proyecto.
-- Instala las dependencias con `npm install`.
-- Ejecuta el sandbox con `npm run dev`.
-- Abre el navegador en `http://localhost:5173/` (si ese puerto no te funciona, mira en la consola donde has hecho el build, puede que este ocupado y se haya abierto en otro puerto).
-- Puedes empezar a meter tu código en el fichero:
+De los apartados opcionales, he hecho los apartados de «Game Over» y «Nueva partida»; me han faltado los apartados de «Me planto» y «Saber lo que habría pasado».
