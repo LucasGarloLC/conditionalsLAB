@@ -1,96 +1,103 @@
 
-let score = 0;
+let score: number = 0;
+let lose: boolean = false;
 
-const muestraPuntuacion = (mensaje: string) => {
-    const puntuacion = document.getElementById("score") as HTMLInputElement;
-    return puntuacion.innerHTML = mensaje;
-};
-
-const dameCarta = () => {
-    document.getElementById("drawcard")?.addEventListener("click", () => {
-        const randomValue = Math.floor(Math.random() * 10 + 1)
-        const randomCard = randomValue > 7 ? randomValue + 2 : randomValue;
-        const score = sumarValor(randomCard)
-        if (score <= 7.5) {
-            mostrarCarta(randomCard) 
-        } else {
-            mostrarCarta(randomCard) 
+const drawcard = document.getElementById("drawcard");
+if(drawcard !== null && drawcard !== undefined && drawcard instanceof HTMLElement){
+    drawcard.addEventListener("click", () => {
+        const randomCard = dameCarta();
+        const cardValue = comprobarValor(randomCard)
+        const urlCarta = obtenerUrlCarta(randomCard)
+        score = sumarValor(cardValue)
+        lose = isLost();
+        if(lose) {
+            hideButtons();
+            resetGame();
         }
-        showMessageGame(score)
+        pintarImagenCarta(urlCarta)
+        const finalMessage = showMessageGame(score)
+        muestraPuntuacion(finalMessage);
     })
 }
 
-dameCarta();
-//Tal y como me dijiste, la función no debería estar fuera para evitar que se esté procesando todo el rato y obstaculice que se arranquen otras funciones.
+const muestraPuntuacion = (mensaje: string): void => {
+    const puntuacion = document.getElementById('score');
+    if(puntuacion !== null && puntuacion !== undefined && puntuacion instanceof HTMLElement){
+        puntuacion.innerHTML = mensaje
+    }        
+};
 
-const mostrarCarta = (carta: number) => {
-    const img = document.getElementById("img1") as HTMLImageElement;
+const dameCarta = (): number => {
+    const randomValue = Math.floor(Math.random() * 10 + 1)
+    return randomValue > 7 ? randomValue + 2 : randomValue;
+}
+
+const obtenerUrlCarta = (carta: number): string => {
+    let urlImage: string;
     switch (carta) {
         case 1 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/1_as-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/1_as-copas.jpg"
         break;
         case 2 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/2_dos-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/2_dos-copas.jpg"
         break;
         case 3 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/3_tres-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/3_tres-copas.jpg"
         break;
         case 4 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/4_cuatro-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/4_cuatro-copas.jpg"
         break;
         case 5 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/5_cinco-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/5_cinco-copas.jpg"
         break;
         case 6 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/6_seis-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/6_seis-copas.jpg"
         break;
         case 7 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/7_siete-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/7_siete-copas.jpg"
         break;
         case 10 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/10_sota-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/10_sota-copas.jpg"
         break;
         case 11 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/11_caballo-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/11_caballo-copas.jpg"
         break;
         case 12 :
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/12_rey-copas.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/12_rey-copas.jpg"
         break;
         default:
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
+            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
     }
+    return urlImage
 }
 
-const sumarValor = (carta: number): number => {
-    const points = carta > 7.5 ? 0.5 : carta
-    score = score + points;
-    return score
+const pintarImagenCarta = (imagen: string): void => {
+    const img = document.getElementById("img1")
+    if(img !== null && img !== undefined && img instanceof HTMLImageElement){
+        img.src = imagen
+    }    
 }
 
-const showMessageGame = (score: number) => {
-    let mensaje;
+const sumarValor = (points: number): number => score + points;
+
+const comprobarValor = (carta: number): number => carta > 7.5 ? 0.5 : carta
+
+const showMessageGame = (score: number): string => {
+    return score > 7.5 ? `GAME OVER ⚰️`: `${score}`;
+}
+const isLost = (): boolean => {
     if (score > 7.5) {
-        mensaje = `GAME OVER ⚰️`;
-        resetGame()
-    } else {
-        mensaje = `${score}`;
+        return true
     }
-    muestraPuntuacion(mensaje);
+    return false;
 }
 
 const mePlanto = () => {
     document.getElementById("stand")?.addEventListener ("click", () => {
-        const restartButton = document.getElementById("restart") as HTMLButtonElement
-        restartButton.style.display = "block"
-        const standButton = document.getElementById("stand") as HTMLButtonElement
-        standButton.style.display = "none"
-        const borrarImagen = document.getElementById("drawcard") as HTMLButtonElement
-        borrarImagen.style.display = "none"
-        const queHubieraPasadoButton = document.getElementById("queHubieraPasado") as HTMLButtonElement
-        queHubieraPasadoButton.style.display = "block"
+        hideButtons();
         if (score <= 7.5) {
-            //mensajeMePlanto()
-            //queHubieraPasado()
+            const messageStand = mensajeMePlanto(score);
+            muestraPuntuacion(messageStand);
             resetGame()
         }
         })
@@ -98,59 +105,84 @@ const mePlanto = () => {
 
 mePlanto();
 
-/*
-/// TODO: aquí estaba intentando mostrar los distintos mensajes de la parte de «Me planto».
-
-const mensajeMePlanto = (mensaje: string, score: number) => {
-    switch (true) {
-        case (score <= 4) :
-        mensaje = ``
-        break;
-        case (score >= 4 || score <= 6) :
-        mensaje = `Te ha entrado el canguelo, ¿eh?`
-        break;
-        case (score >= 6 || score <= 7) :
-        mensaje = `Casi casi`
-        break;
-        case (score === 7.5) :
-        mensaje = `¡Lo has clavado! ¡Enhorabuena!`
-        break;
+const mensajeMePlanto = (score: number): string => {
+    let mensaje: string = "";
+    switch (score) {
+        case  4 :
+        case  4.5 :
+        case  5 :
+        case  5.5 :
+            mensaje = `Te ha entrado el canguelo, ¿eh?`
+            break;
+        case 6 :
+        case 6.5 :
+        case 7 :
+            mensaje = `Casi casi`
+            break;
+        case 7.5 :
+            mensaje = `¡Lo has clavado! ¡Enhorabuena!`
+            break;
         default :
-        console.log("Something went wrong")
-        break;
+            console.log("Something went wrong")
+            break;
     }
+    return mensaje;
 }
 
-// Aquí quería empezar a hacer la parte de «Qué hubiera pasado», pero no he sabido continuar.
-
+/*
+// Aquí voy empezar a hacer la parte de «Qué hubiera pasado»
 const queHubieraPasado = () => {
     document.getElementById("queHubieraPasado")?.addEventListener ("click", () => {
         const queHubieraPasadoButton = document.getElementById("queHubieraPasado") as HTMLButtonElement
         queHubieraPasadoButton.style.display = "block"
     })
-}
-
-queHubieraPasado();
 */
 
 const resetGame = () => {
-    const restartButton = document.getElementById("restart") as HTMLButtonElement
-    restartButton.style.display = "block"
-    const standButton = document.getElementById("stand") as HTMLButtonElement
-    standButton.style.display = "none"
-    const borrarImagen = document.getElementById("drawcard") as HTMLButtonElement
-    borrarImagen.style.display = "none"
-    const queHubieraPasadoButton = document.getElementById("queHubieraPasado") as HTMLButtonElement
-    queHubieraPasadoButton.style.display = "none"
+    const restartButton = document.getElementById("restart");
+    if(restartButton !!== null && restartButton !== undefined && restartButton instanceof HTMLButtonElement)
     restartButton.addEventListener("click", () => {
         score = 0;
         restartButton.style.display = "none";
-        standButton.style.display = "block";
-        queHubieraPasadoButton.style.display = "none";
         muestraPuntuacion("");
-    borrarImagen.style.display = "block"
-    const img = document.getElementById("img1") as HTMLImageElement;
-    img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
+        showButtons();
+        const img = document.getElementById("img1");
+        if(img !== null && img !== undefined && img instanceof HTMLImageElement){
+            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
+        } 
     });
 }
 
+const hideButtons = () => {
+    const restartButton = document.getElementById("restart");
+    if(restartButton !!== null && restartButton !== undefined && restartButton instanceof HTMLButtonElement){
+        restartButton.style.display = "block"
+    }
+    const standButton = document.getElementById("stand");
+    if(standButton !!== null && standButton !== undefined && standButton instanceof HTMLButtonElement){
+        standButton.disabled = true; 
+    }
+    const borrarImagen = document.getElementById("drawcard");
+    if(borrarImagen !!== null && borrarImagen !== undefined && borrarImagen instanceof HTMLButtonElement){
+        borrarImagen.disabled = true; 
+    }
+    const queHubieraPasadoButton = document.getElementById("queHubieraPasado");
+    if(queHubieraPasadoButton !!== null && queHubieraPasadoButton !== undefined && queHubieraPasadoButton instanceof HTMLButtonElement){
+    queHubieraPasadoButton.style.display = "none"
+    }
+}
+
+const showButtons = () => {
+    const standButton = document.getElementById("stand");
+    if(standButton !!== null && standButton !== undefined && standButton instanceof HTMLButtonElement){
+        standButton.disabled = false;
+    } 
+    const borrarImagen = document.getElementById("drawcard");
+    if(borrarImagen !!== null && borrarImagen !== undefined && borrarImagen instanceof HTMLButtonElement){
+        borrarImagen.disabled = false; 
+    }
+    const queHubieraPasadoButton = document.getElementById("queHubieraPasado");
+    if(queHubieraPasadoButton !!== null && queHubieraPasadoButton !== undefined && queHubieraPasadoButton instanceof HTMLButtonElement){
+        queHubieraPasadoButton.style.display = "none"
+    }
+}

@@ -1,5 +1,5 @@
 body {
-  background-image: url(/src/images/cardswallpaper.jpg);
+  background-image: url(/src/cardswallpaper.jpg);
 }
 
 main {
@@ -53,6 +53,11 @@ h1:hover {
   font-size: 32px;
 }
 
+.button:disabled {
+  background-color: brown;
+  color: aquamarine;
+  
+}
 .img-container, .button-container  {
   display: flex;
   justify-content: center;
