@@ -1,29 +1,75 @@
-
 let score: number = 0;
 let lose: boolean = false;
-
+const urlBase: string = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/"
+const fileFormat: string = ".jpg";
 const drawcard = document.getElementById("drawcard");
+const newGameButton = document.getElementById("new-game");
+const stand = document.getElementById("stand");
+const queHubieraPasadoButton = document.getElementById("queHubieraPasado");
+
 if(drawcard !== null && drawcard !== undefined && drawcard instanceof HTMLElement){
     drawcard.addEventListener("click", () => {
-        const randomCard = dameCarta();
-        const cardValue = comprobarValor(randomCard)
-        const urlCarta = obtenerUrlCarta(randomCard)
-        score = sumarValor(cardValue)
-        lose = isLost();
-        if(lose) {
-            hideButtons();
-            resetGame();
-        }
-        pintarImagenCarta(urlCarta)
-        const finalMessage = showMessageGame(score)
-        muestraPuntuacion(finalMessage);
+        const randomCard: number = dameCarta();
+        const cardValue: number = comprobarValor(randomCard);
+        const urlCarta: string = obtenerUrlCarta(randomCard);
+        savePoints(cardValue);
+        mePlanto()
+        finalDeLaMano(urlCarta);
     })
 }
 
-const muestraPuntuacion = (mensaje: string): void => {
+if(stand !== null && stand !== undefined && stand instanceof HTMLElement){
+    document.getElementById("stand")?.addEventListener ("click", () => {
+        hideOrShowButton("new-game", false, true);
+        hideOrShowButton("stand", true, true, "none");
+        hideOrShowButton("drawcard", true, false);
+        hideOrShowButton("queHubieraPasado", false, true, "block");
+        if (score <= 7.5) {
+            const messageStand: string = mensajeMePlanto(score);
+            muestraPuntuacion(messageStand);
+        }
+    })
+};
+
+if(queHubieraPasadoButton !== null && queHubieraPasadoButton !== undefined && queHubieraPasadoButton instanceof HTMLElement){
+    document.getElementById("queHubieraPasado")?.addEventListener("click", () => { 
+        hideOrShowButton("queHubieraPasado", false, true);
+        const randomCard: number = dameCarta();
+        const cardValue: number = comprobarValor(randomCard);
+        const urlCarta: string = obtenerUrlCarta(randomCard);
+        savePoints(cardValue);
+        pintarImagenCarta(urlCarta)
+        muestraPuntuacion(score.toString());
+    })
+}
+
+if(newGameButton !!== null && newGameButton !== undefined && newGameButton instanceof HTMLButtonElement)
+newGameButton.addEventListener("click", () => {
+    score = 0;
+    newGameButton.style.display = "none";
+    muestraPuntuacion();
+    hideOrShowButton("new-game", true, true, "none");
+    hideOrShowButton("stand", true, true, "none");
+    hideOrShowButton("drawcard", false, true);
+    hideOrShowButton("queHubieraPasado", true, true, "none");
+    const img = document.getElementById("img1");
+    if(img !== null && img !== undefined && img instanceof HTMLImageElement){
+        img.src = `${urlBase}back${fileFormat}`
+    } 
+});
+
+const mePlanto = (): void => {
+    hideOrShowButton("stand", false, true);
+}
+
+const savePoints = (points: number): void => {
+    score = sumarPuntos(points);
+}
+
+const muestraPuntuacion = (mensaje: string = ""): void => {
     const puntuacion = document.getElementById('score');
     if(puntuacion !== null && puntuacion !== undefined && puntuacion instanceof HTMLElement){
-        puntuacion.innerHTML = mensaje
+        puntuacion.innerHTML = mensaje;
     }        
 };
 
@@ -36,37 +82,37 @@ const obtenerUrlCarta = (carta: number): string => {
     let urlImage: string;
     switch (carta) {
         case 1 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/1_as-copas.jpg"
+            urlImage = `${urlBase}copas/1_as-copas${fileFormat}`
         break;
         case 2 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/2_dos-copas.jpg"
+            urlImage = `${urlBase}copas/2_dos-copas${fileFormat}`
         break;
         case 3 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/3_tres-copas.jpg"
+            urlImage = `${urlBase}copas/3_tres-copas${fileFormat}`
         break;
         case 4 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/4_cuatro-copas.jpg"
+            urlImage = `${urlBase}copas/4_cuatro-copas${fileFormat}`
         break;
         case 5 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/5_cinco-copas.jpg"
+            urlImage = `${urlBase}copas/5_cinco-copas${fileFormat}`
         break;
         case 6 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/6_seis-copas.jpg"
+            urlImage = `${urlBase}copas/6_seis-copas${fileFormat}`
         break;
         case 7 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/7_siete-copas.jpg"
+            urlImage = `${urlBase}copas/7_siete-copas${fileFormat}`
         break;
         case 10 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/10_sota-copas.jpg"
+            urlImage = `${urlBase}copas/10_sota-copas${fileFormat}`
         break;
         case 11 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/11_caballo-copas.jpg"
+            urlImage = `${urlBase}copas/11_caballo-copas${fileFormat}`
         break;
         case 12 :
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/copas/12_rey-copas.jpg"
+            urlImage = `${urlBase}copas/12_rey-copas${fileFormat}`
         break;
         default:
-            urlImage = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
+            urlImage = `${urlBase}back${fileFormat}`
     }
     return urlImage
 }
@@ -78,13 +124,14 @@ const pintarImagenCarta = (imagen: string): void => {
     }    
 }
 
-const sumarValor = (points: number): number => score + points;
+const sumarPuntos = (points: number): number => score + points;
 
 const comprobarValor = (carta: number): number => carta > 7.5 ? 0.5 : carta
 
 const showMessageGame = (score: number): string => {
-    return score > 7.5 ? `GAME OVER ⚰️`: `${score}`;
+    return score > 7.5 ? `GAME OVER ⚰️`: score === 7.5 ? "Has ganado" : `${score}`;
 }
+
 const isLost = (): boolean => {
     if (score > 7.5) {
         return true
@@ -92,97 +139,43 @@ const isLost = (): boolean => {
     return false;
 }
 
-const mePlanto = () => {
-    document.getElementById("stand")?.addEventListener ("click", () => {
-        hideButtons();
-        if (score <= 7.5) {
-            const messageStand = mensajeMePlanto(score);
-            muestraPuntuacion(messageStand);
-            resetGame()
-        }
-        })
+const finalDeLaMano = (urlCarta: string): void => {
+    lose = isLost();
+    if(lose) {
+        hideOrShowButton("new-game", false, true);
+        hideOrShowButton("stand", true, true, "none");
+        hideOrShowButton("drawcard", true, false);
+        hideOrShowButton("queHubieraPasado", true, true, "none");
     }
+    pintarImagenCarta(urlCarta)
+    const finalMessage = showMessageGame(score)
+    muestraPuntuacion(finalMessage);
+}
 
-mePlanto();
 
 const mensajeMePlanto = (score: number): string => {
     let mensaje: string = "";
-    switch (score) {
-        case  4 :
-        case  4.5 :
-        case  5 :
-        case  5.5 :
-            mensaje = `Te ha entrado el canguelo, ¿eh?`
-            break;
-        case 6 :
-        case 6.5 :
-        case 7 :
-            mensaje = `Casi casi`
-            break;
-        case 7.5 :
-            mensaje = `¡Lo has clavado! ¡Enhorabuena!`
-            break;
-        default :
-            console.log("Something went wrong")
-            break;
+    if(score < 4) {
+        mensaje = `Has sido muy conservador.`
     }
-    return mensaje;
+    if(score >= 4 && score <= 5.5) {
+        mensaje = `Te ha entrado el canguelo, ¿eh?`
+    }
+    if (score >= 6 && score <= 7) {
+        mensaje = `Casi casi.`
+    }
+    if (score === 7.5) {
+        mensaje = `¡Lo has clavado! ¡Enhorabuena!`
+    }
+    return mensaje
 }
 
-/*
-// Aquí voy empezar a hacer la parte de «Qué hubiera pasado»
-const queHubieraPasado = () => {
-    document.getElementById("queHubieraPasado")?.addEventListener ("click", () => {
-        const queHubieraPasadoButton = document.getElementById("queHubieraPasado") as HTMLButtonElement
-        queHubieraPasadoButton.style.display = "block"
-    })
-*/
-
-const resetGame = () => {
-    const restartButton = document.getElementById("restart");
-    if(restartButton !!== null && restartButton !== undefined && restartButton instanceof HTMLButtonElement)
-    restartButton.addEventListener("click", () => {
-        score = 0;
-        restartButton.style.display = "none";
-        muestraPuntuacion("");
-        showButtons();
-        const img = document.getElementById("img1");
-        if(img !== null && img !== undefined && img instanceof HTMLImageElement){
-            img.src = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/back.jpg"
-        } 
-    });
-}
-
-const hideButtons = () => {
-    const restartButton = document.getElementById("restart");
-    if(restartButton !!== null && restartButton !== undefined && restartButton instanceof HTMLButtonElement){
-        restartButton.style.display = "block"
-    }
-    const standButton = document.getElementById("stand");
-    if(standButton !!== null && standButton !== undefined && standButton instanceof HTMLButtonElement){
-        standButton.disabled = true; 
-    }
-    const borrarImagen = document.getElementById("drawcard");
-    if(borrarImagen !!== null && borrarImagen !== undefined && borrarImagen instanceof HTMLButtonElement){
-        borrarImagen.disabled = true; 
-    }
-    const queHubieraPasadoButton = document.getElementById("queHubieraPasado");
-    if(queHubieraPasadoButton !!== null && queHubieraPasadoButton !== undefined && queHubieraPasadoButton instanceof HTMLButtonElement){
-    queHubieraPasadoButton.style.display = "none"
-    }
-}
-
-const showButtons = () => {
-    const standButton = document.getElementById("stand");
-    if(standButton !!== null && standButton !== undefined && standButton instanceof HTMLButtonElement){
-        standButton.disabled = false;
-    } 
-    const borrarImagen = document.getElementById("drawcard");
-    if(borrarImagen !!== null && borrarImagen !== undefined && borrarImagen instanceof HTMLButtonElement){
-        borrarImagen.disabled = false; 
-    }
-    const queHubieraPasadoButton = document.getElementById("queHubieraPasado");
-    if(queHubieraPasadoButton !!== null && queHubieraPasadoButton !== undefined && queHubieraPasadoButton instanceof HTMLButtonElement){
-        queHubieraPasadoButton.style.display = "none"
+const hideOrShowButton = (id: string, disabled: boolean, isDisplayed: boolean = true, display: string = "block"): void => {
+    const button = document.getElementById(id)
+    if(button !!== null && button !== undefined && button instanceof HTMLButtonElement){
+        button.disabled = disabled
+        if(isDisplayed) {
+            button.style.display = display
+        }  
     }
 }
