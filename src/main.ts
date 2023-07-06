@@ -58,6 +58,10 @@ function funcionNuevaPartida():void {
     puntuacion = 0;
     muestraPuntuacion();
     deshabilitarBotonesNuevaPartida();
+    mostrarImagenNuevaPartida();
+};
+
+function mostrarImagenNuevaPartida(): void {
     const img = document.getElementById("img1");
     if(img && img instanceof HTMLImageElement){
         img.src = `${urlBase}back${formatoArchivo}`
@@ -134,13 +138,6 @@ const dameValorCarta = (carta: number): number => carta > 7.5 ? 0.5 : carta
 
 const mostrarMensajePartida = (score: number): string => {
     return score > 7.5 ? `GAME OVER ⚰️`: score === 7.5 ? "Has ganado" : `${score}`;
-};
-
-const partidaPerdida = (): boolean => {
-    if (puntuacion > 7.5) {
-        return true
-    }
-    return false;
 };
 
 const finalDeLaMano = (puntosTotales: number): void => {
