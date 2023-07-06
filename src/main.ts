@@ -187,12 +187,12 @@ const mensajeQueHubieraPasado = (puntuacion: number): string => {
     return mensaje
 };
 
-const mostrarUOcultarBotones = (id: string, esDeshabilitado: boolean, isDisplayed: boolean = true, display: string = "block"): void => {
+const mostrarUOcultarBotones = (id: string, esDeshabilitado: boolean, esMostrado: boolean = true, mostrar: string = "block"): void => {
     const boton = document.getElementById(id)
     if(boton && boton instanceof HTMLButtonElement){
         boton.disabled = esDeshabilitado
-        if(isDisplayed) {
-            boton.style.display = display
+        if(esMostrado) {
+            boton.style.display = mostrar
         }  
     }
 };
