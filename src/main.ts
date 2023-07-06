@@ -1,70 +1,72 @@
-let score: number = 0;
-let lose: boolean = false;
+let puntuacion: number = 0;
+let hePerdido: boolean = false;
 const urlBase: string = "https://raw.githubusercontent.com/Lemoncode/fotos-ejemplos/main/cartas/"
-const fileFormat: string = ".jpg";
-const drawcard = document.getElementById("drawcard");
-const newGameButton = document.getElementById("new-game");
-const stand = document.getElementById("stand");
+const formatoArchivo: string = ".jpg";
+const dameUnaCarta = document.getElementById("drawcard");
+const nuevaPartida = document.getElementById("new-game");
+const plantarse = document.getElementById("stand");
 const queHubieraPasadoButton = document.getElementById("queHubieraPasado");
 
-if(drawcard !== null && drawcard !== undefined && drawcard instanceof HTMLElement){
-    drawcard.addEventListener("click", () => {
-        const randomCard: number = dameCarta();
-        const cardValue: number = comprobarValor(randomCard);
-        const urlCarta: string = obtenerUrlCarta(randomCard);
-        savePoints(cardValue);
-        mePlanto()
-        finalDeLaMano(urlCarta);
-    })
-}
-
-if(stand !== null && stand !== undefined && stand instanceof HTMLElement){
-    document.getElementById("stand")?.addEventListener ("click", () => {
-        hideOrShowButton("new-game", false, true);
-        hideOrShowButton("stand", true, true, "none");
-        hideOrShowButton("drawcard", true, false);
-        hideOrShowButton("queHubieraPasado", false, true, "block");
-        if (score <= 7.5) {
-            const messageStand: string = mensajeMePlanto(score);
-            muestraPuntuacion(messageStand);
-        }
-    })
+if(dameUnaCarta && dameUnaCarta instanceof HTMLElement){
+    dameUnaCarta.addEventListener("click", funcionDameUnaCarta)
 };
 
-if(queHubieraPasadoButton !== null && queHubieraPasadoButton !== undefined && queHubieraPasadoButton instanceof HTMLElement){
-    document.getElementById("queHubieraPasado")?.addEventListener("click", () => { 
-        hideOrShowButton("queHubieraPasado", false, true);
-        const randomCard: number = dameCarta();
-        const cardValue: number = comprobarValor(randomCard);
-        const urlCarta: string = obtenerUrlCarta(randomCard);
-        savePoints(cardValue);
-        pintarImagenCarta(urlCarta)
-        muestraPuntuacion(score.toString());
-    })
-}
+if(plantarse && plantarse instanceof HTMLElement){
+    plantarse.addEventListener ("click", funcionPlantarse);
+};
 
-if(newGameButton !!== null && newGameButton !== undefined && newGameButton instanceof HTMLButtonElement)
-newGameButton.addEventListener("click", () => {
-    score = 0;
-    newGameButton.style.display = "none";
+if(nuevaPartida && nuevaPartida instanceof HTMLButtonElement){
+nuevaPartida.addEventListener("click", funcionNuevaPartida)
+};
+
+if(queHubieraPasadoButton && queHubieraPasadoButton instanceof HTMLElement){
+    queHubieraPasadoButton.addEventListener("click", funcionQueHubieraPasado)
+};
+
+
+function funcionDameUnaCarta(): void {
+    const cartaAleatoria: number = dameCarta();
+    const valorCarta: number = dameValorCarta(cartaAleatoria);
+    const urlCarta: string = obtenerUrlCarta(cartaAleatoria);
+    pintarImagenCarta(urlCarta);
+    const puntos = sumarPuntos(valorCarta);
+    guardarPuntos(puntos);
+    muestraPuntuacion(`${puntuacion}`);
+    mostrarUOcultarBotones("stand", false, true);
+    finalDeLaMano(puntuacion);
+};
+
+function funcionPlantarse(): void {
+    const mensajePlantarse: string = mensajeMePlanto(puntuacion);
+    muestraPuntuacion(mensajePlantarse);
+    deshabilitarBotonesPlantarse();
+};
+
+function funcionQueHubieraPasado(): void {
+    mostrarUOcultarBotones("queHubieraPasado", true, true);
+    const cartaAleatoria: number = dameCarta();
+    const valorCarta: number = dameValorCarta(cartaAleatoria);
+    const urlCarta: string = obtenerUrlCarta(cartaAleatoria);
+    const mensaje: string = mensajeQueHubieraPasado(puntuacion)
+    guardarPuntos(valorCarta);
+    pintarImagenCarta(urlCarta)
+    muestraPuntuacion(puntuacion.toString());
+    muestraPuntuacion(mensaje);
+};
+
+function funcionNuevaPartida():void {
+    puntuacion = 0;
     muestraPuntuacion();
-    hideOrShowButton("new-game", true, true, "none");
-    hideOrShowButton("stand", true, true, "none");
-    hideOrShowButton("drawcard", false, true);
-    hideOrShowButton("queHubieraPasado", true, true, "none");
+    deshabilitarBotonesNuevaPartida();
     const img = document.getElementById("img1");
-    if(img !== null && img !== undefined && img instanceof HTMLImageElement){
-        img.src = `${urlBase}back${fileFormat}`
+    if(img && img instanceof HTMLImageElement){
+        img.src = `${urlBase}back${formatoArchivo}`
     } 
-});
+};
 
-const mePlanto = (): void => {
-    hideOrShowButton("stand", false, true);
-}
-
-const savePoints = (points: number): void => {
-    score = sumarPuntos(points);
-}
+const guardarPuntos = (points: number): void => {
+    puntuacion = points;
+};
 
 const muestraPuntuacion = (mensaje: string = ""): void => {
     const puntuacion = document.getElementById('score');
@@ -74,108 +76,144 @@ const muestraPuntuacion = (mensaje: string = ""): void => {
 };
 
 const dameCarta = (): number => {
-    const randomValue = Math.floor(Math.random() * 10 + 1)
-    return randomValue > 7 ? randomValue + 2 : randomValue;
-}
+    const numeroAleatorio = generarNumeroAleatorio();
+    return numeroAleatorio > 7 ? numeroAleatorio + 2 : numeroAleatorio;
+};
+
+const generarNumeroAleatorio = (): number => Math.floor(Math.random() * 10 + 1);
 
 const obtenerUrlCarta = (carta: number): string => {
-    let urlImage: string;
+    let urlImagen: string;
     switch (carta) {
         case 1 :
-            urlImage = `${urlBase}copas/1_as-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/1_as-copas${formatoArchivo}`
         break;
         case 2 :
-            urlImage = `${urlBase}copas/2_dos-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/2_dos-copas${formatoArchivo}`
         break;
         case 3 :
-            urlImage = `${urlBase}copas/3_tres-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/3_tres-copas${formatoArchivo}`
         break;
         case 4 :
-            urlImage = `${urlBase}copas/4_cuatro-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/4_cuatro-copas${formatoArchivo}`
         break;
         case 5 :
-            urlImage = `${urlBase}copas/5_cinco-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/5_cinco-copas${formatoArchivo}`
         break;
         case 6 :
-            urlImage = `${urlBase}copas/6_seis-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/6_seis-copas${formatoArchivo}`
         break;
         case 7 :
-            urlImage = `${urlBase}copas/7_siete-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/7_siete-copas${formatoArchivo}`
         break;
         case 10 :
-            urlImage = `${urlBase}copas/10_sota-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/10_sota-copas${formatoArchivo}`
         break;
         case 11 :
-            urlImage = `${urlBase}copas/11_caballo-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/11_caballo-copas${formatoArchivo}`
         break;
         case 12 :
-            urlImage = `${urlBase}copas/12_rey-copas${fileFormat}`
+            urlImagen = `${urlBase}copas/12_rey-copas${formatoArchivo}`
         break;
         default:
-            urlImage = `${urlBase}back${fileFormat}`
-    }
-    return urlImage
-}
-
+            urlImagen = `${urlBase}back${formatoArchivo}`
+        }
+        return urlImagen
+};
+                        
 const pintarImagenCarta = (imagen: string): void => {
     const img = document.getElementById("img1")
-    if(img !== null && img !== undefined && img instanceof HTMLImageElement){
+    if(img && img instanceof HTMLImageElement){
         img.src = imagen
     }    
-}
+};
 
-const sumarPuntos = (points: number): number => score + points;
+const sumarPuntos = (points: number): number => puntuacion + points;
 
-const comprobarValor = (carta: number): number => carta > 7.5 ? 0.5 : carta
+const dameValorCarta = (carta: number): number => carta > 7.5 ? 0.5 : carta
 
-const showMessageGame = (score: number): string => {
+const mostrarMensajePartida = (score: number): string => {
     return score > 7.5 ? `GAME OVER ⚰️`: score === 7.5 ? "Has ganado" : `${score}`;
-}
+};
 
-const isLost = (): boolean => {
-    if (score > 7.5) {
+const partidaPerdida = (): boolean => {
+    if (puntuacion > 7.5) {
         return true
     }
     return false;
-}
+};
 
-const finalDeLaMano = (urlCarta: string): void => {
-    lose = isLost();
-    if(lose) {
-        hideOrShowButton("new-game", false, true);
-        hideOrShowButton("stand", true, true, "none");
-        hideOrShowButton("drawcard", true, false);
-        hideOrShowButton("queHubieraPasado", true, true, "none");
+const finalDeLaMano = (puntosTotales: number): void => {
+    if (puntosTotales === 7.5) {
+        hemosGanadoPartida();
     }
-    pintarImagenCarta(urlCarta)
-    const finalMessage = showMessageGame(score)
-    muestraPuntuacion(finalMessage);
-}
+    if(puntosTotales > 7.5) {
+        hemosPerdidoPartida();
+    }
+};
 
+const hemosGanadoPartida = () => {
+    muestraPuntuacion(`Has ganado.`)
+};
 
-const mensajeMePlanto = (score: number): string => {
+const hemosPerdidoPartida = () => {
+    muestraPuntuacion(`GAME OVER ⚰️`)
+    deshabilitarBotonesPartidaPerdida();
+};
+
+const mensajeMePlanto = (puntuacion: number): string => {
     let mensaje: string = "";
-    if(score < 4) {
+    if(puntuacion < 4) {
         mensaje = `Has sido muy conservador.`
     }
-    if(score >= 4 && score <= 5.5) {
+    if(puntuacion >= 4 && puntuacion <= 5.5) {
         mensaje = `Te ha entrado el canguelo, ¿eh?`
     }
-    if (score >= 6 && score <= 7) {
+    if (puntuacion >= 6 && puntuacion <= 7) {
         mensaje = `Casi casi.`
     }
-    if (score === 7.5) {
+    if (puntuacion === 7.5) {
         mensaje = `¡Lo has clavado! ¡Enhorabuena!`
     }
     return mensaje
-}
+};
 
-const hideOrShowButton = (id: string, disabled: boolean, isDisplayed: boolean = true, display: string = "block"): void => {
-    const button = document.getElementById(id)
-    if(button !!== null && button !== undefined && button instanceof HTMLButtonElement){
-        button.disabled = disabled
+const mensajeQueHubieraPasado = (puntuacion: number): string => {
+    let mensaje: string = "";
+    if(puntuacion === 7.5) {
+        mensaje = `${puntuacion} Habrías ganado el juego.`
+    }
+    mensaje = puntuacion < 7.5 ? `No habrías ganado, <br> pero ¡te has quedado cerca!`: `Habrías perdido.` 
+    return mensaje
+};
+
+const mostrarUOcultarBotones = (id: string, esDeshabilitado: boolean, isDisplayed: boolean = true, display: string = "block"): void => {
+    const boton = document.getElementById(id)
+    if(boton && boton instanceof HTMLButtonElement){
+        boton.disabled = esDeshabilitado
         if(isDisplayed) {
-            button.style.display = display
+            boton.style.display = display
         }  
     }
-}
+};
+
+const deshabilitarBotonesPlantarse = () => {
+    mostrarUOcultarBotones("new-game", false, true);
+    mostrarUOcultarBotones("stand", true, true, "none");
+    mostrarUOcultarBotones("drawcard", true, false);
+    mostrarUOcultarBotones("queHubieraPasado", false, true, "block");
+};
+
+const deshabilitarBotonesPartidaPerdida = () => {
+    mostrarUOcultarBotones("new-game", false, true);
+    mostrarUOcultarBotones("stand", true, true, "none");
+    mostrarUOcultarBotones("drawcard", true, false);
+    mostrarUOcultarBotones("queHubieraPasado", true, true, "none");
+};
+
+const deshabilitarBotonesNuevaPartida = () => {
+    mostrarUOcultarBotones("new-game", true, true, "none");
+    mostrarUOcultarBotones("stand", true, true, "none");
+    mostrarUOcultarBotones("drawcard", false, true);
+    mostrarUOcultarBotones("queHubieraPasado", true, true, "none");
+};
