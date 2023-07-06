@@ -23,7 +23,6 @@ if(queHubieraPasadoButton && queHubieraPasadoButton instanceof HTMLElement){
     queHubieraPasadoButton.addEventListener("click", funcionQueHubieraPasado)
 };
 
-
 function funcionDameUnaCarta(): void {
     const cartaAleatoria: number = dameCarta();
     const valorCarta: number = dameValorCarta(cartaAleatoria);
@@ -74,7 +73,7 @@ const guardarPuntos = (points: number): void => {
 
 const muestraPuntuacion = (mensaje: string = ""): void => {
     const puntuacion = document.getElementById('score');
-    if(puntuacion !== null && puntuacion !== undefined && puntuacion instanceof HTMLElement){
+    if(puntuacion && puntuacion instanceof HTMLElement){
         puntuacion.innerHTML = mensaje;
     }        
 };
@@ -121,8 +120,8 @@ const obtenerUrlCarta = (carta: number): string => {
         break;
         default:
             urlImagen = `${urlBase}back${formatoArchivo}`
-        }
-        return urlImagen
+    }
+    return urlImagen
 };
                         
 const pintarImagenCarta = (imagen: string): void => {
@@ -215,7 +214,6 @@ const deshabilitarBotonesPartidaPerdida = () => {
     mostrarUOcultarBotones("drawcard", true, false);
     mostrarUOcultarBotones("queHubieraPasado", true, true, "none");
 };
-
 
 const deshabilitarBotonesNuevaPartida = () => {
     mostrarUOcultarBotones("new-game", true, true, "none");
