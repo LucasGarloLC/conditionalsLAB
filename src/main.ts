@@ -151,6 +151,7 @@ const finalDeLaMano = (puntosTotales: number): void => {
 
 const hemosGanadoPartida = () => {
     muestraPuntuacion(`Has ganado.`)
+    deshabilitarBotonesPartidaGanada();
 };
 
 const hemosPerdidoPartida = () => {
@@ -201,12 +202,20 @@ const deshabilitarBotonesPlantarse = () => {
     mostrarUOcultarBotones("queHubieraPasado", false, true, "block");
 };
 
+const deshabilitarBotonesPartidaGanada = () => {
+    mostrarUOcultarBotones("new-game", false, true);
+    mostrarUOcultarBotones("stand", true, true, "none");
+    mostrarUOcultarBotones("drawcard", true, false);
+    mostrarUOcultarBotones("queHubieraPasado", true, true, "none");
+};
+
 const deshabilitarBotonesPartidaPerdida = () => {
     mostrarUOcultarBotones("new-game", false, true);
     mostrarUOcultarBotones("stand", true, true, "none");
     mostrarUOcultarBotones("drawcard", true, false);
     mostrarUOcultarBotones("queHubieraPasado", true, true, "none");
 };
+
 
 const deshabilitarBotonesNuevaPartida = () => {
     mostrarUOcultarBotones("new-game", true, true, "none");
